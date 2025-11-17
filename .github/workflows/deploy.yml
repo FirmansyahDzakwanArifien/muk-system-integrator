@@ -21,27 +21,11 @@ jobs:
         key: ${{ secrets.VPS_SSH_KEY }}
         port: 22
         script: |
-          echo "=== Starting Deployment ==="
-          
           cd /home/bnsp5/muk/muk-system-integrator
-
-          echo "Pulling latest code..."
           git pull origin main
-
-          echo "Stopping old container..."
-          docker stop my-app || true
-          docker rm my-app || true
-
-          echo "Removing old image..."
-          docker rmi my-web-app || true
-
-          echo "Building new image..."
-          docker build --no-cache -t my-web-app .
-
-          echo "Starting new container..."
+          docker stop my-app && docker rm my-app && docker rmi my-web-app || true
+          docker build -t my-web-app .
           docker run -d -p 80:80 --name my-app my-web-app
-
-          echo "=== Deployment Complete ==="
-          docker ps | grep my-app
-          echo "Showing first 20 lines of deployed file:"
-          docker exec my-app cat /usr/share/nginx/html/index.html | head -20
+          sleep 2
+          docker ps
+          echo "Deployment completed!"
