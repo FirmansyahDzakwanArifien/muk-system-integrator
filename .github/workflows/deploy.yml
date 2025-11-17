@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     
-    - name: Deploy to VPS
+    - name: Deploy to VPS via SSH
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.VPS_HOST }}
@@ -21,9 +21,10 @@ jobs:
         key: ${{ secrets.VPS_SSH_KEY }}
         port: 22
         script: |
-          cd /home/bnsp5/muk/muk-system-integrator
-          git pull origin main
-          docker stop my-app && docker rm my-app || true
-          docker rmi my-web-app || true
-          docker build -t my-web-app .
+          cd /home/bnsp5/muk/muk-system-integrator && \
+          git pull origin main && \
+          docker stop my-app 2>/dev/null || true && \
+          docker rm my-app 2>/dev/null || true && \
+          docker rmi my-web-app 2>/dev/null || true && \
+          docker build -t my-web-app . && \
           docker run -d -p 80:80 --name my-app my-web-app
