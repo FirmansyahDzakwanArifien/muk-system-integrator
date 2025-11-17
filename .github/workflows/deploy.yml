@@ -23,9 +23,7 @@ jobs:
         script: |
           cd /home/bnsp5/muk/muk-system-integrator
           git pull origin main
-          docker stop my-app && docker rm my-app && docker rmi my-web-app || true
+          docker stop my-app && docker rm my-app || true
+          docker rmi my-web-app || true
           docker build -t my-web-app .
           docker run -d -p 80:80 --name my-app my-web-app
-          sleep 2
-          docker ps
-          echo "Deployment completed!"
